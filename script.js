@@ -10,6 +10,18 @@ const firebaseConfig = {
   measurementId: "G-LP3VWKX2F7"
 };
 
+// Firebase config (same as before)
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  databaseURL: "YOUR_DATABASE_URL",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID"
+};
+
 // Initialize Firebase (same as before)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
 import { getDatabase, ref, onValue, set, get, child } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
@@ -31,14 +43,14 @@ function joinRoom() {
   if (roomId && userId) {
     currentRoomId = roomId;
     currentUserId = userId;
-    roomRef = ref(database, `platforms/${currentRoomId}`);
-    get(child(roomRef, '/1')).then((snapshot) => {
+    roomRef = ref(database, `rooms/${currentRoomId}`); // Change to rooms/roomID
+    get(child(roomRef, '/users')).then((snapshot) => {
       if (snapshot.exists()) {
         allUsers = Object.keys(snapshot.val());
         if (!allUsers.includes(currentUserId)) {
           allUsers.push(currentUserId);
           // Update Firebase with the new user.
-          set(ref(database, `platforms/${currentRoomId}/1/${currentUserId}`), true);
+          set(ref(database, `rooms/${currentRoomId}/users/${currentUserId}`), true);
         }
         if (allUsers.length > 4) {
           alert("Room is full. Maximum of 4 players allowed.");
@@ -53,8 +65,8 @@ function joinRoom() {
         }
       } else {
         allUsers = [currentUserId];
-        // Create the initial user entry in Firebase.
-        set(ref(database, `platforms/${currentRoomId}/1/${currentUserId}`), true);
+        // Create the initial room structure and user entry in Firebase.
+        set(ref(database, `rooms/${currentRoomId}/users/${currentUserId}`), true);
         const url = new URL(window.location.href);
         url.searchParams.set('roomId', currentRoomId);
         window.history.pushState({}, '', url);
@@ -147,9 +159,9 @@ function clearFirebaseData() {
 function setupRoomListener() {
   if (roomRef) {
     onValue(roomRef, (snapshot) => {
-        const platformData = snapshot.val() || {};
-        if (snapshot.exists() && snapshot.val()[1]) {
-            allUsers = Object.keys(snapshot.val()[1]);
+        const platformData = snapshot.val() && snapshot.val().platforms ? snapshot.val().platforms : {};
+        if (snapshot.exists() && snapshot.val().users) {
+            allUsers = Object.keys(snapshot.val().users);
         } else {
             allUsers = [];
         }
@@ -167,7 +179,7 @@ document.getElementById('platforms').addEventListener('change', (event) => {
     const choice = checkbox.value;
 
     if (roomRef) {
-      const userRef = ref(database, `${roomRef.key}/${platformNumber}/${user}`);
+      const userRef = ref(database, `rooms/${currentRoomId}/platforms/${platformNumber}/${user}`);
       set(userRef, checkbox.checked ? choice : null);
     }
   }
@@ -225,8 +237,8 @@ function updateUIState(platformData) {
 const roomIdFromUrl = getRoomIdFromUrl();
 if (roomIdFromUrl) {
   currentRoomId = roomIdFromUrl;
-  roomRef = ref(database, `platforms/${currentRoomId}`);
-  get(child(roomRef, '/1')).then((snapshot) => {
+  roomRef = ref(database, `rooms/${currentRoomId}`);
+  get(child(roomRef, '/users')).then((snapshot) => {
     if (snapshot.exists()) {
       allUsers = Object.keys(snapshot.val());
       createPlatformUI();
