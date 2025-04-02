@@ -10,7 +10,7 @@ const firebaseConfig = {
   measurementId: "G-LP3VWKX2F7"
 };
 
-// Initialize Firebase
+// Initialize Firebase (same as before)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
 import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
 
@@ -18,137 +18,144 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 let currentRoomId = null;
+let roomRef = null; // Store the room reference
 
 window.joinRoom = function() {
-    const roomIdInput = document.getElementById('roomId');
-    const roomId = roomIdInput.value.trim();
+  const roomIdInput = document.getElementById('roomId');
+  const roomId = roomIdInput.value.trim();
 
-    if (roomId) {
-        currentRoomId = roomId;
-        clearFirebaseData();
-        createPlatformUI();
-    } else {
-        alert('Please enter a room ID.');
-    }
+  if (roomId) {
+    currentRoomId = roomId;
+    roomRef = ref(database, `platforms/${currentRoomId}`); // Store the reference
+    clearFirebaseData();
+    createPlatformUI();
+    setupRoomListener(); // Setup listener after UI is created
+  } else {
+    alert('Please enter a room ID.');
+  }
 };
 
 function createPlatformUI() {
-    const platformTableBody = document.getElementById('platforms');
-    platformTableBody.innerHTML = '';
+  const platformTableBody = document.getElementById('platforms');
+  platformTableBody.innerHTML = '';
 
-    if (!currentRoomId) return;
+  if (!currentRoomId) return;
 
-    for (let i = 10; i >= 1; i--) {
-        const row = document.createElement('tr');
-        const platformCell = document.createElement('td');
-        platformCell.textContent = `Platform ${i}`;
-        row.appendChild(platformCell);
+  for (let i = 10; i >= 1; i--) {
+    const row = document.createElement('tr');
+    const platformCell = document.createElement('td');
+    platformCell.textContent = `Platform ${i}`;
+    row.appendChild(platformCell);
 
-        ['Beleth', 'P0NY', 'UnsungHero', 'AhoyCaptain'].forEach(user => {
-            const userCell = document.createElement('td');
-            userCell.classList.add('choice-container');
-            userCell.dataset.user = user;
-            userCell.dataset.platform = i;
+    ['Beleth', 'P0NY', 'UnsungHero', 'AhoyCaptain'].forEach(user => {
+      const userCell = document.createElement('td');
+      userCell.classList.add('choice-container');
+      userCell.dataset.user = user;
+      userCell.dataset.platform = i;
 
-            const choiceWrapperContainer = document.createElement('div');
-            choiceWrapperContainer.classList.add('choice-wrapper-container');
+      const choiceWrapperContainer = document.createElement('div');
+      choiceWrapperContainer.classList.add('choice-wrapper-container');
 
-            for (let choice = 1; choice <= 4; choice++) {
-                const choiceWrapper = document.createElement('div');
-                choiceWrapper.classList.add('choice-wrapper');
+      for (let choice = 1; choice <= 4; choice++) {
+        const choiceWrapper = document.createElement('div');
+        choiceWrapper.classList.add('choice-wrapper');
 
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.value = choice;
-                checkbox.dataset.platform = i;
-                checkbox.dataset.user = user;
-                checkbox.checked = false;
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = choice;
+        checkbox.dataset.platform = i;
+        checkbox.dataset.user = user;
+        checkbox.checked = false;
 
-                const label = document.createElement('div');
-                label.classList.add('choice-label');
-                label.textContent = choice;
+        const label = document.createElement('div');
+        label.classList.add('choice-label');
+        label.textContent = choice;
 
-                choiceWrapper.appendChild(checkbox);
-                choiceWrapper.appendChild(label);
-                choiceWrapperContainer.appendChild(choiceWrapper);
-            }
-            userCell.appendChild(choiceWrapperContainer);
-            row.appendChild(userCell);
-        });
-        platformTableBody.appendChild(row);
-    }
+        choiceWrapper.appendChild(checkbox);
+        choiceWrapper.appendChild(label);
+        choiceWrapperContainer.appendChild(choiceWrapper);
+      }
+      userCell.appendChild(choiceWrapperContainer);
+      row.appendChild(userCell);
+    });
+    platformTableBody.appendChild(row);
+  }
 }
 
 function clearFirebaseData() {
-    if (currentRoomId) {
-        set(ref(database, `platforms/${currentRoomId}`), null);
-    }
+  if (roomRef) {
+    set(roomRef, null);
+  }
 }
 
-onValue(ref(database, `platforms/${currentRoomId}`), (snapshot) => {
-    const platformData = snapshot.val() || {};
-    updateUIState(platformData);
-});
+function setupRoomListener() {
+  if (roomRef) {
+    onValue(roomRef, (snapshot) => {
+      const platformData = snapshot.val() || {};
+      updateUIState(platformData);
+    });
+  }
+}
 
 document.getElementById('platforms').addEventListener('change', (event) => {
-    if (event.target.type === 'checkbox') {
-        const checkbox = event.target;
-        const platformNumber = checkbox.dataset.platform;
-        const user = checkbox.dataset.user;
-        const choice = checkbox.value;
+  if (event.target.type === 'checkbox') {
+    const checkbox = event.target;
+    const platformNumber = checkbox.dataset.platform;
+    const user = checkbox.dataset.user;
+    const choice = checkbox.value;
 
-        if (currentRoomId) {
-            const userRef = ref(database, `platforms/${currentRoomId}/${platformNumber}/${user}`);
-            set(userRef, checkbox.checked ? choice : null);
-        }
+    if (roomRef) {
+      const userRef = ref(database, `${roomRef.key}/${platformNumber}/${user}`);
+      set(userRef, checkbox.checked ? choice : null);
     }
+  }
 });
 
 function updateUIState(platformData) {
-    document.querySelectorAll('.choice-container').forEach(userCell => {
-        const platform = userCell.dataset.platform;
-        const user = userCell.dataset.user;
-        const checkboxes = userCell.querySelectorAll('input[type="checkbox"]');
+  document.querySelectorAll('.choice-container').forEach(userCell => {
+    const platform = userCell.dataset.platform;
+    const user = userCell.dataset.user;
+    const checkboxes = userCell.querySelectorAll('input[type="checkbox"]');
 
-        checkboxes.forEach(checkbox => {
-            checkbox.disabled = false;
-            checkbox.checked = false;
-            checkbox.parentElement.style.backgroundColor = '';
-        });
-
-        const platformUsersData = platformData[platform] || {};
-        Object.entries(platformUsersData).forEach(([otherUser, otherChoice]) => {
-            if (otherUser !== user && otherChoice) {
-                checkboxes.forEach(checkbox => {
-                    if (checkbox.value === otherChoice) {
-                        checkbox.disabled = true;
-                    }
-                });
-            }
-        });
-
-        Object.entries(platformUsersData).forEach(([dbUser, dbChoice]) => {
-            if (dbChoice) {
-                checkboxes.forEach(checkbox => {
-                    if (checkbox.value === dbChoice) {
-                        checkbox.checked = true;
-                    }
-                });
-            }
-        });
-
-        const currentUserChoice = platformUsersData[user];
-        if (currentUserChoice) {
-            checkboxes.forEach(checkbox => {
-                if (checkbox.value !== currentUserChoice) {
-                    checkbox.disabled = true;
-                }
-            });
-        }
-
-        const uncheckedChoices = Array.from(checkboxes).filter(checkbox => !checkbox.checked && !checkbox.disabled);
-        if (uncheckedChoices.length === 1) {
-            uncheckedChoices[0].parentElement.style.backgroundColor = 'green';
-        }
+    checkboxes.forEach(checkbox => {
+      checkbox.disabled = false;
+      checkbox.checked = false;
+      checkbox.parentElement.style.backgroundColor = '';
     });
+
+    const platformUsersData = platformData[platform] || {};
+    Object.entries(platformUsersData).forEach(([otherUser, otherChoice]) => {
+      if (otherUser !== user && otherChoice) {
+        checkboxes.forEach(checkbox => {
+          if (checkbox.value === otherChoice) {
+            checkbox.disabled = true;
+          }
+        });
+      }
+    });
+
+    Object.entries(platformUsersData).forEach(([dbUser, dbChoice]) => {
+      if (dbChoice) {
+        checkboxes.forEach(checkbox => {
+          if (checkbox.value === dbChoice) {
+            checkbox.checked = true;
+          }
+        });
+      }
+    });
+
+    const currentUserChoice = platformUsersData[user];
+    if (currentUserChoice) {
+      checkboxes.forEach(checkbox => {
+        if (checkbox.value !== currentUserChoice) {
+          checkbox.disabled = true;
+        }
+      });
+    }
+
+    const uncheckedChoices = Array.from(checkboxes).filter(checkbox => !checkbox.checked && !checkbox.disabled);
+    if (uncheckedChoices.length === 1) {
+      uncheckedChoices[0].parentElement.style.backgroundColor = 'green';
+    }
+  });
 }
