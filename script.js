@@ -9,8 +9,7 @@ const firebaseConfig = {
   appId: "1:937466148910:web:42406630f4d64409e947bf",
   measurementId: "G-LP3VWKX2F7"
 };
-
-// Initialize Firebase (same as before)
+// Initialize Firebase
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
 import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
 
@@ -18,7 +17,7 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 let currentRoomId = null;
-let roomRef = null; // Store the room reference
+let roomRef = null;
 
 window.joinRoom = function() {
   const roomIdInput = document.getElementById('roomId');
@@ -26,10 +25,10 @@ window.joinRoom = function() {
 
   if (roomId) {
     currentRoomId = roomId;
-    roomRef = ref(database, `platforms/${currentRoomId}`); // Store the reference
+    roomRef = ref(database, `platforms/${currentRoomId}`);
     clearFirebaseData();
     createPlatformUI();
-    setupRoomListener(); // Setup listener after UI is created
+    setupRoomListener();
   } else {
     alert('Please enter a room ID.');
   }
