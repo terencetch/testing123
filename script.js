@@ -9,6 +9,7 @@ const firebaseConfig = {
   appId: "1:937466148910:web:42406630f4d64409e947bf",
   measurementId: "G-LP3VWKX2F7"
 };
+
 // Initialize Firebase
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
 import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
@@ -19,20 +20,30 @@ const database = getDatabase(app);
 let currentRoomId = null;
 let roomRef = null;
 
-window.joinRoom = function() {
-  const roomIdInput = document.getElementById('roomId');
-  const roomId = roomIdInput.value.trim();
+function generateRoomId() {
+  return Math.random().toString(36).substring(2, 10);
+}
 
-  if (roomId) {
-    currentRoomId = roomId;
-    roomRef = ref(database, `platforms/${currentRoomId}`);
-    clearFirebaseData();
-    createPlatformUI();
-    setupRoomListener();
-  } else {
-    alert('Please enter a room ID.');
-  }
+window.createRoom = function() {
+  const roomId = generateRoomId();
+  const url = new URL(window.location.href);
+  url.searchParams.set('roomId', roomId);
+  window.history.pushState({}, '', url);
+  joinRoom(roomId);
 };
+
+function joinRoom(roomId) {
+  currentRoomId = roomId;
+  roomRef = ref(database, `platforms/${currentRoomId}`);
+  clearFirebaseData();
+  createPlatformUI();
+  setupRoomListener();
+}
+
+function getRoomIdFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('roomId');
+}
 
 function createPlatformUI() {
   const platformTableBody = document.getElementById('platforms');
@@ -157,4 +168,10 @@ function updateUIState(platformData) {
       uncheckedChoices[0].parentElement.style.backgroundColor = 'green';
     }
   });
+}
+
+// Get room ID from URL on page load
+const roomIdFromUrl = getRoomIdFromUrl();
+if (roomIdFromUrl) {
+  joinRoom(roomIdFromUrl);
 }
