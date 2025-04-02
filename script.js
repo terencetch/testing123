@@ -50,14 +50,14 @@ function joinRoom() {
           document.querySelector('.initial-page').style.display = 'none';
         }
       } else {
-          allUsers = [currentUserId]
-          const url = new URL(window.location.href);
-          url.searchParams.set('roomId', currentRoomId);
-          window.history.pushState({}, '', url);
-          clearFirebaseData();
-          createPlatformUI();
-          setupRoomListener();
-          document.querySelector('.initial-page').style.display = 'none';
+        allUsers = [currentUserId]; //set allUsers to contain only current User.
+        const url = new URL(window.location.href);
+        url.searchParams.set('roomId', currentRoomId);
+        window.history.pushState({}, '', url);
+        clearFirebaseData();
+        createPlatformUI();
+        setupRoomListener();
+        document.querySelector('.initial-page').style.display = 'none';
       }
     }).catch((error) => {
       console.error(error);
