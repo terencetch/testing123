@@ -1,18 +1,6 @@
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyCsuTYdBcFTGRYja0ONqRaW_es2eSCIeKA",
-  authDomain: "platform-selection.firebaseapp.com",
-  databaseURL: "https://platform-selection-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "platform-selection",
-  storageBucket: "platform-selection.firebasestorage.app",
-  messagingSenderId: "937466148910",
-  appId: "1:937466148910:web:42406630f4d64409e947bf",
-  measurementId: "G-LP3VWKX2F7"
-};
-
-// Initialize Firebase
+// Initialize Firebase (same as before)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
-import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
+import { getDatabase, ref, onValue, set, get, child } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
 
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
@@ -31,15 +19,29 @@ function joinRoom() {
   if (roomId && userId) {
     currentRoomId = roomId;
     currentUserId = userId;
-    allUsers.push(userId);
-    const url = new URL(window.location.href);
-    url.searchParams.set('roomId', roomId);
-    window.history.pushState({}, '', url);
     roomRef = ref(database, `platforms/${currentRoomId}`);
-    clearFirebaseData();
-    createPlatformUI();
-    setupRoomListener();
-    document.querySelector('.initial-page').style.display = 'none';
+    get(child(roomRef, '/1')).then((snapshot) => {
+      if (snapshot.exists()) {
+        allUsers = Object.keys(snapshot.val());
+        if (!allUsers.includes(currentUserId)){allUsers.push(currentUserId);}
+        if (allUsers.length > 4) {
+            alert("Room is full. Maximum of 4 players allowed.");
+        } else {
+            clearFirebaseData();
+            createPlatformUI();
+            setupRoomListener();
+            document.querySelector('.initial-page').style.display = 'none';
+        }
+      } else {
+        allUsers.push(currentUserId);
+        clearFirebaseData();
+        createPlatformUI();
+        setupRoomListener();
+        document.querySelector('.initial-page').style.display = 'none';
+      }
+    }).catch((error) => {
+      console.error(error);
+    });
   } else {
     alert('Please enter both Room ID and User ID.');
   }
@@ -122,7 +124,20 @@ function setupRoomListener() {
   if (roomRef) {
     onValue(roomRef, (snapshot) => {
       const platformData = snapshot.val() || {};
-      updateUIState(platformData);
+      get(child(roomRef, '/1')).then((snapshot) => {
+        if (snapshot.exists()) {
+          allUsers = Object.keys(snapshot.val());
+          if (!allUsers.includes(currentUserId)){allUsers.push(currentUserId);}
+          createPlatformUI();
+          updateUIState(platformData);
+        } else {
+          allUsers = [currentUserId];
+          createPlatformUI();
+          updateUIState(platformData);
+        }
+      }).catch((error) => {
+        console.error(error);
+      });
     });
   }
 }
@@ -194,9 +209,18 @@ const roomIdFromUrl = getRoomIdFromUrl();
 if (roomIdFromUrl) {
   currentRoomId = roomIdFromUrl;
   roomRef = ref(database, `platforms/${currentRoomId}`);
-  setupRoomListener();
-  createPlatformUI();
-  document.querySelector('.initial-page').style.display = 'none';
+  get(child(roomRef, '/1')).then((snapshot) => {
+    if (snapshot.exists()) {
+      allUsers = Object.keys(snapshot.val());
+      createPlatformUI();
+      setupRoomListener();
+      document.querySelector('.initial-page').style.display = 'none';
+    } else {
+        document.getElementById('platforms').style.display = 'none';
+    }
+  }).catch((error) => {
+    console.error(error);
+  });
 } else {
     document.getElementById('platforms').style.display = 'none';
 }
