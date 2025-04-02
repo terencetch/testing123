@@ -9,6 +9,7 @@ const firebaseConfig = {
   appId: "1:937466148910:web:42406630f4d64409e947bf",
   measurementId: "G-LP3VWKX2F7"
 };
+
 // Initialize Firebase (same as before)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
 import { getDatabase, ref, onValue, set, get, child } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
@@ -146,11 +147,11 @@ function setupRoomListener() {
       get(child(roomRef, '/1')).then((snapshot) => {
         if (snapshot.exists()) {
           allUsers = Object.keys(snapshot.val());
-          createPlatformUI(); //call createPlatformUI here.
+          createPlatformUI();
           updateUIState(platformData);
         } else {
           allUsers = [];
-          createPlatformUI(); //call createPlatformUI here.
+          createPlatformUI();
           updateUIState(platformData);
         }
       }).catch((error) => {
@@ -240,7 +241,5 @@ if (roomIdFromUrl) {
     console.error(error);
   });
 } else {
-    document.getElementById('platforms').style.display = 'none';
-}
     document.getElementById('platforms').style.display = 'none';
 }
