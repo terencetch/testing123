@@ -1,6 +1,33 @@
+body {
+    font-family: sans-serif;
+}
+
+.initial-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Center vertically */
+}
+
+.initial-page input, .initial-page button, .initial-page label {
+    font-size: 1.5em; /* Increase font size */
+    padding: 10px;
+    margin: 5px;
+    text-align: center;
+}
+
+.initial-page button {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
+    margin-top: 20px;
 }
 
 th, td {
