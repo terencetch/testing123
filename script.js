@@ -18,27 +18,31 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 let currentRoomId = null;
+let currentUserId = null;
 let roomRef = null;
+let allUsers = [];
 
-function generateRoomId() {
-  return Math.random().toString(36).substring(2, 10);
-}
+window.joinRoom = function() {
+  const roomIdInput = document.getElementById('roomId');
+  const userIdInput = document.getElementById('userId');
+  const roomId = roomIdInput.value.trim();
+  const userId = userIdInput.value.trim();
 
-window.createRoom = function() {
-  const roomId = generateRoomId();
-  const url = new URL(window.location.href);
-  url.searchParams.set('roomId', roomId);
-  window.history.pushState({}, '', url);
-  joinRoom(roomId);
+  if (roomId && userId) {
+    currentRoomId = roomId;
+    currentUserId = userId;
+    allUsers.push(userId); //add current user to user list
+    const url = new URL(window.location.href);
+    url.searchParams.set('roomId', roomId);
+    window.history.pushState({}, '', url);
+    roomRef = ref(database, `platforms/${currentRoomId}`);
+    clearFirebaseData();
+    createPlatformUI();
+    setupRoomListener();
+  } else {
+    alert('Please enter both Room ID and User ID.');
+  }
 };
-
-function joinRoom(roomId) {
-  currentRoomId = roomId;
-  roomRef = ref(database, `platforms/${currentRoomId}`);
-  clearFirebaseData();
-  createPlatformUI();
-  setupRoomListener();
-}
 
 function getRoomIdFromUrl() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -51,13 +55,26 @@ function createPlatformUI() {
 
   if (!currentRoomId) return;
 
+  // Add header row with user IDs
+  const headerRow = document.createElement('tr');
+  const platformHeader = document.createElement('th');
+  platformHeader.textContent = 'Platforms';
+  headerRow.appendChild(platformHeader);
+
+  allUsers.forEach(user => {
+    const userHeader = document.createElement('th');
+    userHeader.textContent = user;
+    headerRow.appendChild(userHeader);
+  });
+  platformTableBody.appendChild(headerRow);
+
   for (let i = 10; i >= 1; i--) {
     const row = document.createElement('tr');
     const platformCell = document.createElement('td');
     platformCell.textContent = `Platform ${i}`;
     row.appendChild(platformCell);
 
-    ['Beleth', 'P0NY', 'UnsungHero', 'AhoyCaptain'].forEach(user => {
+    allUsers.forEach(user => {
       const userCell = document.createElement('td');
       userCell.classList.add('choice-container');
       userCell.dataset.user = user;
@@ -173,5 +190,8 @@ function updateUIState(platformData) {
 // Get room ID from URL on page load
 const roomIdFromUrl = getRoomIdFromUrl();
 if (roomIdFromUrl) {
-  joinRoom(roomIdFromUrl);
+  currentRoomId = roomIdFromUrl;
+  roomRef = ref(database, `platforms/${currentRoomId}`);
+  setupRoomListener();
+  createPlatformUI();
 }
