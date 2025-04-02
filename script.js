@@ -277,5 +277,3 @@ if (roomIdFromUrl) {
 } else {
     document.getElementById('platforms').style.display = 'none';
 }
-    document.getElementById('platforms').style.display = 'none';
-}
