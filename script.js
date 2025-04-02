@@ -10,7 +10,7 @@ const firebaseConfig = {
   measurementId: "G-LP3VWKX2F7"
 };
 
-// Initialize Firebase
+// Initialize Firebase (same as before)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
 import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
 
@@ -22,7 +22,7 @@ let currentUserId = null;
 let roomRef = null;
 let allUsers = [];
 
-window.joinRoom = function() {
+window.joinRoom = function() { // Make joinRoom available globally
   const roomIdInput = document.getElementById('roomId');
   const userIdInput = document.getElementById('userId');
   const roomId = roomIdInput.value.trim();
@@ -31,7 +31,7 @@ window.joinRoom = function() {
   if (roomId && userId) {
     currentRoomId = roomId;
     currentUserId = userId;
-    allUsers.push(userId); //add current user to user list
+    allUsers.push(userId);
     const url = new URL(window.location.href);
     url.searchParams.set('roomId', roomId);
     window.history.pushState({}, '', url);
