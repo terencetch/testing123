@@ -34,17 +34,19 @@ function joinRoom() {
     get(child(roomRef, '/1')).then((snapshot) => {
       if (snapshot.exists()) {
         allUsers = Object.keys(snapshot.val());
-        if (!allUsers.includes(currentUserId)){allUsers.push(currentUserId);}
+        if (!allUsers.includes(currentUserId)) {
+          allUsers.push(currentUserId);
+        }
         if (allUsers.length > 4) {
-            alert("Room is full. Maximum of 4 players allowed.");
+          alert("Room is full. Maximum of 4 players allowed.");
         } else {
-            const url = new URL(window.location.href);
-            url.searchParams.set('roomId', currentRoomId);
-            window.history.pushState({}, '', url);
-            clearFirebaseData();
-            createPlatformUI();
-            setupRoomListener();
-            document.querySelector('.initial-page').style.display = 'none';
+          const url = new URL(window.location.href);
+          url.searchParams.set('roomId', currentRoomId);
+          window.history.pushState({}, '', url);
+          clearFirebaseData();
+          createPlatformUI();
+          setupRoomListener();
+          document.querySelector('.initial-page').style.display = 'none';
         }
       } else {
         allUsers.push(currentUserId);
@@ -144,11 +146,11 @@ function setupRoomListener() {
       get(child(roomRef, '/1')).then((snapshot) => {
         if (snapshot.exists()) {
           allUsers = Object.keys(snapshot.val());
-          createPlatformUI();
+          createPlatformUI(); //call createPlatformUI here.
           updateUIState(platformData);
         } else {
           allUsers = [];
-          createPlatformUI();
+          createPlatformUI(); //call createPlatformUI here.
           updateUIState(platformData);
         }
       }).catch((error) => {
@@ -238,5 +240,7 @@ if (roomIdFromUrl) {
     console.error(error);
   });
 } else {
+    document.getElementById('platforms').style.display = 'none';
+}
     document.getElementById('platforms').style.display = 'none';
 }
