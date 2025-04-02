@@ -50,7 +50,7 @@ function joinRoom() {
           document.querySelector('.initial-page').style.display = 'none';
         }
       } else {
-        allUsers = [currentUserId]; //set allUsers to contain only current User.
+        allUsers = [currentUserId];
         const url = new URL(window.location.href);
         url.searchParams.set('roomId', currentRoomId);
         window.history.pushState({}, '', url);
@@ -147,6 +147,7 @@ function setupRoomListener() {
       get(child(roomRef, '/1')).then((snapshot) => {
         if (snapshot.exists()) {
           allUsers = Object.keys(snapshot.val());
+          // Update allUsers in real-time
           createPlatformUI();
           updateUIState(platformData);
         } else {
