@@ -1,16 +1,16 @@
 // Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyCsuTYdBcFTGRYja0ONqRaW_es2eSCIeKA",
-  authDomain: "platform-selection.firebaseapp.com",
-  databaseURL: "https://platform-selection-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "platform-selection",
-  storageBucket: "platform-selection.firebasestorage.app",
-  messagingSenderId: "937466148910",
-  appId: "1:937466148910:web:42406630f4d64409e947bf",
-  measurementId: "G-LP3VWKX2F7"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  databaseURL: "YOUR_DATABASE_URL",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID"
 };
 
-// Initialize Firebase (same as before)
+// Initialize Firebase
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
 import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
 
@@ -22,7 +22,7 @@ let currentUserId = null;
 let roomRef = null;
 let allUsers = [];
 
-window.joinRoom = function() { // Make joinRoom available globally
+function joinRoom() {
   const roomIdInput = document.getElementById('roomId');
   const userIdInput = document.getElementById('userId');
   const roomId = roomIdInput.value.trim();
@@ -42,7 +42,10 @@ window.joinRoom = function() { // Make joinRoom available globally
   } else {
     alert('Please enter both Room ID and User ID.');
   }
-};
+}
+
+// Add event listener to the button
+document.getElementById('joinRoomButton').addEventListener('click', joinRoom);
 
 function getRoomIdFromUrl() {
   const urlParams = new URLSearchParams(window.location.search);
