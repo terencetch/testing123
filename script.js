@@ -37,6 +37,8 @@ function joinRoom() {
         allUsers = Object.keys(snapshot.val());
         if (!allUsers.includes(currentUserId)) {
           allUsers.push(currentUserId);
+          // Update Firebase with the new user.
+          set(ref(database, `platforms/${currentRoomId}/1/${currentUserId}`), true);
         }
         if (allUsers.length > 4) {
           alert("Room is full. Maximum of 4 players allowed.");
@@ -51,6 +53,8 @@ function joinRoom() {
         }
       } else {
         allUsers = [currentUserId];
+        // Create the initial user entry in Firebase.
+        set(ref(database, `platforms/${currentRoomId}/1/${currentUserId}`), true);
         const url = new URL(window.location.href);
         url.searchParams.set('roomId', currentRoomId);
         window.history.pushState({}, '', url);
@@ -143,21 +147,14 @@ function clearFirebaseData() {
 function setupRoomListener() {
   if (roomRef) {
     onValue(roomRef, (snapshot) => {
-      const platformData = snapshot.val() || {};
-      get(child(roomRef, '/1')).then((snapshot) => {
-        if (snapshot.exists()) {
-          allUsers = Object.keys(snapshot.val());
-          // Update allUsers in real-time
-          createPlatformUI();
-          updateUIState(platformData);
+        const platformData = snapshot.val() || {};
+        if (snapshot.exists() && snapshot.val()[1]) {
+            allUsers = Object.keys(snapshot.val()[1]);
         } else {
-          allUsers = [];
-          createPlatformUI();
-          updateUIState(platformData);
+            allUsers = [];
         }
-      }).catch((error) => {
-        console.error(error);
-      });
+        createPlatformUI();
+        updateUIState(platformData);
     });
   }
 }
