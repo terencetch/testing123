@@ -27,43 +27,45 @@ function joinRoom() {
   const roomId = roomIdInput.value.trim();
   const userId = userIdInput.value.trim();
 
-  if (roomId && userId) {
-    currentRoomId = roomId;
-    currentUserId = userId;
-    const usersRef = ref(database, `rooms/${currentRoomId}/users`);
-
-    get(usersRef)
-      .then((snapshot) => {
-        let users = snapshot.val() ? Object.keys(snapshot.val()) : [];
-
-        if (users.length >= 4 && !users.includes(userId)) {
-          alert('The room is at maximum capacity (4 players).');
-          return; // Stop the join process
-        }
-
-        roomRef = ref(database, `rooms/${currentRoomId}/users/${currentUserId}`);
-
-        set(roomRef, true)
-          .then(() => {
-            const url = new URL(window.location.href);
-            url.searchParams.set('roomId', currentRoomId);
-            window.history.pushState({}, '', url);
-            createPlatformUI();
-            setupRoomListener();
-            document.querySelector('.initial-page').style.display = 'none';
-          })
-          .catch((error) => {
-            console.error('Error joining room:', error);
-            alert('Failed to join room. Please try again.');
-          });
-      })
-      .catch((error) => {
-        console.error('Error fetching users:', error);
-        alert('Failed to join room. Please try again.');
-      });
-  } else {
+  if (!roomId || !userId) {
     alert('Please enter both Room ID and User ID.');
+    return;
   }
+
+  currentRoomId = roomId;
+  currentUserId = userId;
+  const usersRef = ref(database, `rooms/${currentRoomId}/users`);
+
+  get(usersRef)
+    .then((snapshot) => {
+      const users = snapshot.val() ? Object.keys(snapshot.val()) : [];
+
+      if (users.length >= 4 && !users.includes(userId)) {
+        alert('The room is at maximum capacity (4 players).');
+        return;
+      }
+
+      // Add the user to the room
+      set(ref(database, `rooms/${currentRoomId}/users/${userId}`), true)
+        .then(() => {
+          // Success, generate URL and update UI
+          const url = new URL(window.location.href);
+          url.searchParams.set('roomId', currentRoomId);
+          window.history.pushState({}, '', url);
+
+          createPlatformUI();
+          setupRoomListener();
+          document.querySelector('.initial-page').style.display = 'none';
+        })
+        .catch((setError) => {
+          console.error('Error setting user in room:', setError);
+          alert('Failed to join room. Please try again.');
+        });
+    })
+    .catch((getError) => {
+      console.error('Error fetching users:', getError);
+      alert('Failed to join room. Please try again.');
+    });
 }
 
 document.getElementById('joinRoomButton').addEventListener('click', joinRoom);
