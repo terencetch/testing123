@@ -39,12 +39,12 @@ function joinRoom() {
     clearFirebaseData();
     createPlatformUI();
     setupRoomListener();
+    document.querySelector('.initial-page').style.display = 'none';
   } else {
     alert('Please enter both Room ID and User ID.');
   }
 }
 
-// Add event listener to the button
 document.getElementById('joinRoomButton').addEventListener('click', joinRoom);
 
 function getRoomIdFromUrl() {
@@ -54,11 +54,11 @@ function getRoomIdFromUrl() {
 
 function createPlatformUI() {
   const platformTableBody = document.getElementById('platforms');
+  platformTableBody.style.display = 'table';
   platformTableBody.innerHTML = '';
 
   if (!currentRoomId) return;
 
-  // Add header row with user IDs
   const headerRow = document.createElement('tr');
   const platformHeader = document.createElement('th');
   platformHeader.textContent = 'Platforms';
@@ -190,11 +190,13 @@ function updateUIState(platformData) {
   });
 }
 
-// Get room ID from URL on page load
 const roomIdFromUrl = getRoomIdFromUrl();
 if (roomIdFromUrl) {
   currentRoomId = roomIdFromUrl;
   roomRef = ref(database, `platforms/${currentRoomId}`);
   setupRoomListener();
   createPlatformUI();
+  document.querySelector('.initial-page').style.display = 'none';
+} else {
+    document.getElementById('platforms').style.display = 'none';
 }
