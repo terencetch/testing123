@@ -127,11 +127,10 @@ function setupRoomListener() {
       get(child(roomRef, '/1')).then((snapshot) => {
         if (snapshot.exists()) {
           allUsers = Object.keys(snapshot.val());
-          if (!allUsers.includes(currentUserId)){allUsers.push(currentUserId);}
           createPlatformUI();
           updateUIState(platformData);
         } else {
-          allUsers = [currentUserId];
+          allUsers = [];
           createPlatformUI();
           updateUIState(platformData);
         }
