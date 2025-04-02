@@ -13,7 +13,7 @@ const firebaseConfig = {
 
 // Initialize Firebase (same as before)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
-import { getDatabase, ref, onValue, set, get, child } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
+import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
 
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
@@ -21,7 +21,6 @@ const database = getDatabase(app);
 let currentRoomId = null;
 let currentUserId = null;
 let roomRef = null;
-let allUsers = [];
 
 function joinRoom() {
   const roomIdInput = document.getElementById('roomId');
@@ -32,41 +31,21 @@ function joinRoom() {
   if (roomId && userId) {
     currentRoomId = roomId;
     currentUserId = userId;
-    roomRef = ref(database, `rooms/${currentRoomId}`); // Change to rooms/roomID
-    get(child(roomRef, '/users')).then((snapshot) => {
-      if (snapshot.exists()) {
-        allUsers = Object.keys(snapshot.val());
-        if (!allUsers.includes(currentUserId)) {
-          allUsers.push(currentUserId);
-          // Update Firebase with the new user.
-          set(ref(database, `rooms/${currentRoomId}/users/${currentUserId}`), true);
-        }
-        if (allUsers.length > 4) {
-          alert("Room is full. Maximum of 4 players allowed.");
-        } else {
-          const url = new URL(window.location.href);
-          url.searchParams.set('roomId', currentRoomId);
-          window.history.pushState({}, '', url);
-          clearFirebaseData();
-          createPlatformUI();
-          setupRoomListener();
-          document.querySelector('.initial-page').style.display = 'none';
-        }
-      } else {
-        allUsers = [currentUserId];
-        // Create the initial room structure and user entry in Firebase.
-        set(ref(database, `rooms/${currentRoomId}/users/${currentUserId}`), true);
+    roomRef = ref(database, `rooms/${currentRoomId}/users/${currentUserId}`);
+
+    set(roomRef, true)
+      .then(() => {
         const url = new URL(window.location.href);
         url.searchParams.set('roomId', currentRoomId);
         window.history.pushState({}, '', url);
-        clearFirebaseData();
         createPlatformUI();
         setupRoomListener();
         document.querySelector('.initial-page').style.display = 'none';
-      }
-    }).catch((error) => {
-      console.error(error);
-    });
+      })
+      .catch((error) => {
+        console.error('Error joining room:', error);
+        alert('Failed to join room. Please try again.');
+      });
   } else {
     alert('Please enter both Room ID and User ID.');
   }
@@ -91,71 +70,68 @@ function createPlatformUI() {
   platformHeader.textContent = 'Platforms';
   headerRow.appendChild(platformHeader);
 
-  allUsers.forEach(user => {
-    const userHeader = document.createElement('th');
-    userHeader.textContent = user;
-    headerRow.appendChild(userHeader);
-  });
-  platformTableBody.appendChild(headerRow);
+  const usersRef = ref(database, `rooms/${currentRoomId}/users`);
+  onValue(usersRef, (snapshot) => {
+    const users = snapshot.val() ? Object.keys(snapshot.val()) : [];
 
-  for (let i = 10; i >= 1; i--) {
-    const row = document.createElement('tr');
-    const platformCell = document.createElement('td');
-    platformCell.textContent = `Platform ${i}`;
-    row.appendChild(platformCell);
-
-    allUsers.forEach(user => {
-      const userCell = document.createElement('td');
-      userCell.classList.add('choice-container');
-      userCell.dataset.user = user;
-      userCell.dataset.platform = i;
-
-      const choiceWrapperContainer = document.createElement('div');
-      choiceWrapperContainer.classList.add('choice-wrapper-container');
-
-      for (let choice = 1; choice <= 4; choice++) {
-        const choiceWrapper = document.createElement('div');
-        choiceWrapper.classList.add('choice-wrapper');
-
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.value = choice;
-        checkbox.dataset.platform = i;
-        checkbox.dataset.user = user;
-        checkbox.checked = false;
-
-        const label = document.createElement('div');
-        label.classList.add('choice-label');
-        label.textContent = choice;
-
-        choiceWrapper.appendChild(checkbox);
-        choiceWrapper.appendChild(label);
-        choiceWrapperContainer.appendChild(choiceWrapper);
-      }
-      userCell.appendChild(choiceWrapperContainer);
-      row.appendChild(userCell);
+    users.forEach(user => {
+      const userHeader = document.createElement('th');
+      userHeader.textContent = user;
+      headerRow.appendChild(userHeader);
     });
-    platformTableBody.appendChild(row);
-  }
-}
+    platformTableBody.appendChild(headerRow);
 
-function clearFirebaseData() {
-  if (roomRef) {
-    set(roomRef, null);
-  }
+    for (let i = 10; i >= 1; i--) {
+      const row = document.createElement('tr');
+      const platformCell = document.createElement('td');
+      platformCell.textContent = `Platform ${i}`;
+      row.appendChild(platformCell);
+
+      users.forEach(user => {
+        const userCell = document.createElement('td');
+        userCell.classList.add('choice-container');
+        userCell.dataset.user = user;
+        userCell.dataset.platform = i;
+
+        const choiceWrapperContainer = document.createElement('div');
+        choiceWrapperContainer.classList.add('choice-wrapper-container');
+
+        for (let choice = 1; choice <= 4; choice++) {
+          const choiceWrapper = document.createElement('div');
+          choiceWrapper.classList.add('choice-wrapper');
+
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.value = choice;
+          checkbox.dataset.platform = i;
+          checkbox.dataset.user = user;
+          checkbox.checked = false;
+
+          const label = document.createElement('div');
+          label.classList.add('choice-label');
+          label.textContent = choice;
+
+          choiceWrapper.appendChild(checkbox);
+          choiceWrapper.appendChild(label);
+          choiceWrapperContainer.appendChild(choiceWrapper);
+        }
+        userCell.appendChild(choiceWrapperContainer);
+        row.appendChild(userCell);
+      });
+      platformTableBody.appendChild(row);
+    }
+  });
 }
 
 function setupRoomListener() {
-  if (roomRef) {
-    onValue(roomRef, (snapshot) => {
-        const platformData = snapshot.val() && snapshot.val().platforms ? snapshot.val().platforms : {};
-        if (snapshot.exists() && snapshot.val().users) {
-            allUsers = Object.keys(snapshot.val().users);
-        } else {
-            allUsers = [];
-        }
-        createPlatformUI();
-        updateUIState(platformData);
+  if (currentRoomId) {
+    const platformRef = ref(database, `rooms/${currentRoomId}/platforms`);
+    onValue(platformRef, (snapshot) => {
+      if (snapshot.exists()) {
+        updateUIState(snapshot.val());
+      } else {
+        updateUIState({});
+      }
     });
   }
 }
@@ -167,7 +143,7 @@ document.getElementById('platforms').addEventListener('change', (event) => {
     const user = checkbox.dataset.user;
     const choice = checkbox.value;
 
-    if (roomRef) {
+    if (currentRoomId) {
       const userRef = ref(database, `rooms/${currentRoomId}/platforms/${platformNumber}/${user}`);
       set(userRef, checkbox.checked ? choice : null);
     }
@@ -226,19 +202,9 @@ function updateUIState(platformData) {
 const roomIdFromUrl = getRoomIdFromUrl();
 if (roomIdFromUrl) {
   currentRoomId = roomIdFromUrl;
-  roomRef = ref(database, `rooms/${currentRoomId}`);
-  get(child(roomRef, '/users')).then((snapshot) => {
-    if (snapshot.exists()) {
-      allUsers = Object.keys(snapshot.val());
-      createPlatformUI();
-      setupRoomListener();
-      document.querySelector('.initial-page').style.display = 'none';
-    } else {
-        document.getElementById('platforms').style.display = 'none';
-    }
-  }).catch((error) => {
-    console.error(error);
-  });
+  createPlatformUI();
+  setupRoomListener();
+  document.querySelector('.initial-page').style.display = 'none';
 } else {
     document.getElementById('platforms').style.display = 'none';
 }
