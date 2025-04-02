@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Platform Selection</title>
-    <link rel="stylesheet" href="styles.css">
+  <title>Platform Game</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="initial-page">
-        <label for="roomId">Room ID:</label>
-        <input type="text" id="roomId" placeholder="Enter Room ID"><br><br>
-        <label for="userId">User ID:</label>
-        <input type="text" id="userId" placeholder="Enter User ID"><br><br>
-        <button id="joinRoomButton">Join Room</button>
-    </div>
+  <div class="initial-page">
+    <input type="text" id="roomId" placeholder="Room ID">
+    <input type="text" id="userId" placeholder="User ID">
+    <button id="joinRoomButton">Join Room</button>
+  </div>
+
+  <div class="room-page">
+    <button id="clearRoomButton" style="display: none;">Clear Room</button>
     <table id="platforms"></table>
-    <script type="module" src="script.js"></script>
+  </div>
+
+  <script type="module" src="script.js"></script>
 </body>
 </html>
