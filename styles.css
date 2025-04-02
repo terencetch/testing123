@@ -1,0 +1,34 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: center;
+}
+
+.th {
+    background-color: #f2f2f2;
+}
+
+.choice-wrapper-container {
+    display: flex;
+    justify-content: center;
+}
+
+.choice-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5px;
+}
+
+.choice-label {
+    margin-top: 5px;
+}
+
+.choice-wrapper input[type="checkbox"] {
+    transform: scale(1.5);
+}
