@@ -9,19 +9,6 @@ const firebaseConfig = {
   appId: "1:937466148910:web:42406630f4d64409e947bf",
   measurementId: "G-LP3VWKX2F7"
 };
-
-// Firebase config (same as before)
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
-};
-
 // Initialize Firebase (same as before)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
 import { getDatabase, ref, onValue, set, get, child } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
