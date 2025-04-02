@@ -33,15 +33,20 @@ function joinRoom() {
     const usersRef = ref(database, `rooms/${currentRoomId}/users`);
 
     get(usersRef).then((snapshot) => {
-      const users = snapshot.val() ? Object.keys(snapshot.val()) : [];
+      let users = snapshot.val() ? Object.keys(snapshot.val()) : [];
 
       if (users.length >= 4 && !users.includes(userId)) {
         alert('Room is full. Maximum of 4 players allowed.');
         return; // Stop the join process
       }
 
-      roomRef = ref(database, `rooms/${currentRoomId}/users/${currentUserId}`);
-      set(roomRef, true)
+      // Add the user to the list if not already present
+      if (!users.includes(userId)) {
+        users.push(userId);
+      }
+
+      // Update Firebase with the updated user list
+      set(usersRef, Object.fromEntries(users.map(user => [user, true])))
         .then(() => {
           const url = new URL(window.location.href);
           url.searchParams.set('roomId', currentRoomId);
@@ -54,6 +59,9 @@ function joinRoom() {
           console.error('Error joining room:', error);
           alert('Failed to join room. Please try again.');
         });
+    }).catch((error) => {
+      console.error('Error fetching users:', error);
+      alert('Failed to join room. Please try again.');
     });
   } else {
     alert('Please enter both Room ID and User ID.');
