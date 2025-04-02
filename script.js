@@ -30,21 +30,31 @@ function joinRoom() {
   if (roomId && userId) {
     currentRoomId = roomId;
     currentUserId = userId;
-    roomRef = ref(database, `rooms/${currentRoomId}/users/${currentUserId}`);
+    const usersRef = ref(database, `rooms/${currentRoomId}/users`);
 
-    set(roomRef, true)
-      .then(() => {
-        const url = new URL(window.location.href);
-        url.searchParams.set('roomId', currentRoomId);
-        window.history.pushState({}, '', url);
-        createPlatformUI();
-        setupRoomListener();
-        document.querySelector('.initial-page').style.display = 'none';
-      })
-      .catch((error) => {
-        console.error('Error joining room:', error);
-        alert('Failed to join room. Please try again.');
-      });
+    get(usersRef).then((snapshot) => {
+      const users = snapshot.val() ? Object.keys(snapshot.val()) : [];
+
+      if (users.length >= 4 && !users.includes(userId)) {
+        alert('Room is full. Maximum of 4 players allowed.');
+        return; // Stop the join process
+      }
+
+      roomRef = ref(database, `rooms/${currentRoomId}/users/${currentUserId}`);
+      set(roomRef, true)
+        .then(() => {
+          const url = new URL(window.location.href);
+          url.searchParams.set('roomId', currentRoomId);
+          window.history.pushState({}, '', url);
+          createPlatformUI();
+          setupRoomListener();
+          document.querySelector('.initial-page').style.display = 'none';
+        })
+        .catch((error) => {
+          console.error('Error joining room:', error);
+          alert('Failed to join room. Please try again.');
+        });
+    });
   } else {
     alert('Please enter both Room ID and User ID.');
   }
