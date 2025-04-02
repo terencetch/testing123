@@ -62,7 +62,12 @@ function createPlatformUI() {
   platformTableBody.style.display = 'table';
   platformTableBody.innerHTML = '';
 
-  if (!currentRoomId) return;
+  if (!currentRoomId) {
+    document.getElementById('clearRoomButton').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('clearRoomButton').style.display = 'block';
 
   const headerRow = document.createElement('tr');
   const platformHeader = document.createElement('th');
@@ -228,6 +233,24 @@ function updateUIState(platformData) {
     }
   });
 }
+
+function clearRoom() {
+  if (currentRoomId) {
+    const platformRef = ref(database, `rooms/${currentRoomId}/platforms`);
+    set(platformRef, null)
+      .then(() => {
+        alert('Platform choices cleared!');
+        // Update the UI to clear the platform choices
+        updateUIState({}); // Pass an empty object to clear all choices
+      })
+      .catch((error) => {
+        console.error('Error clearing platform choices:', error);
+        alert('Failed to clear platform choices. Please try again.');
+      });
+  }
+}
+
+document.getElementById('clearRoomButton').addEventListener('click', clearRoom);
 
 const roomIdFromUrl = getRoomIdFromUrl();
 if (roomIdFromUrl) {
