@@ -9,7 +9,6 @@ const firebaseConfig = {
   appId: "1:937466148910:web:42406630f4d64409e947bf",
   measurementId: "G-LP3VWKX2F7"
 };
-
 // Initialize Firebase (same as before)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
 import { getDatabase, ref, onValue, set, get, child } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
@@ -39,6 +38,9 @@ function joinRoom() {
         if (allUsers.length > 4) {
             alert("Room is full. Maximum of 4 players allowed.");
         } else {
+            const url = new URL(window.location.href);
+            url.searchParams.set('roomId', currentRoomId);
+            window.history.pushState({}, '', url);
             clearFirebaseData();
             createPlatformUI();
             setupRoomListener();
@@ -46,6 +48,9 @@ function joinRoom() {
         }
       } else {
         allUsers.push(currentUserId);
+        const url = new URL(window.location.href);
+        url.searchParams.set('roomId', currentRoomId);
+        window.history.pushState({}, '', url);
         clearFirebaseData();
         createPlatformUI();
         setupRoomListener();
