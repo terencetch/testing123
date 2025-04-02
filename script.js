@@ -10,7 +10,6 @@ const firebaseConfig = {
   measurementId: "G-LP3VWKX2F7"
 };
 
-
 // Initialize Firebase (same as before)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
 import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
@@ -69,57 +68,88 @@ function createPlatformUI() {
   const platformHeader = document.createElement('th');
   platformHeader.textContent = 'Platforms';
   headerRow.appendChild(platformHeader);
+  platformTableBody.appendChild(headerRow);
 
+  // Create the platform rows only once
+  for (let i = 10; i >= 1; i--) {
+    const row = document.createElement('tr');
+    const platformCell = document.createElement('td');
+    platformCell.textContent = `Platform ${i}`;
+    row.appendChild(platformCell);
+    platformTableBody.appendChild(row);
+  }
+
+  // Update user headers dynamically
+  updateUserHeaders();
+}
+
+function updateUserHeaders() {
   const usersRef = ref(database, `rooms/${currentRoomId}/users`);
   onValue(usersRef, (snapshot) => {
     const users = snapshot.val() ? Object.keys(snapshot.val()) : [];
+    const headerRow = document.querySelector('#platforms tr'); // Get the header row
 
+    // Remove existing user headers
+    while (headerRow.cells.length > 1) {
+      headerRow.deleteCell(1);
+    }
+
+    // Add new user headers
     users.forEach(user => {
       const userHeader = document.createElement('th');
       userHeader.textContent = user;
       headerRow.appendChild(userHeader);
     });
-    platformTableBody.appendChild(headerRow);
 
-    for (let i = 10; i >= 1; i--) {
-      const row = document.createElement('tr');
-      const platformCell = document.createElement('td');
-      platformCell.textContent = `Platform ${i}`;
-      row.appendChild(platformCell);
+    // Update user cells in platform rows
+    updateUserCells(users);
+  });
+}
 
-      users.forEach(user => {
-        const userCell = document.createElement('td');
-        userCell.classList.add('choice-container');
-        userCell.dataset.user = user;
-        userCell.dataset.platform = i;
+function updateUserCells(users) {
+  const platformTableBody = document.getElementById('platforms');
+  const platformRows = platformTableBody.querySelectorAll('tr:not(:first-child)'); // Skip header row
 
-        const choiceWrapperContainer = document.createElement('div');
-        choiceWrapperContainer.classList.add('choice-wrapper-container');
+  platformRows.forEach((row, index) => {
+    const platformNumber = 10 - index; // Calculate platform number
 
-        for (let choice = 1; choice <= 4; choice++) {
-          const choiceWrapper = document.createElement('div');
-          choiceWrapper.classList.add('choice-wrapper');
-
-          const checkbox = document.createElement('input');
-          checkbox.type = 'checkbox';
-          checkbox.value = choice;
-          checkbox.dataset.platform = i;
-          checkbox.dataset.user = user;
-          checkbox.checked = false;
-
-          const label = document.createElement('div');
-          label.classList.add('choice-label');
-          label.textContent = choice;
-
-          choiceWrapper.appendChild(checkbox);
-          choiceWrapper.appendChild(label);
-          choiceWrapperContainer.appendChild(choiceWrapper);
-        }
-        userCell.appendChild(choiceWrapperContainer);
-        row.appendChild(userCell);
-      });
-      platformTableBody.appendChild(row);
+    // Remove existing user cells
+    while (row.cells.length > 1) {
+      row.deleteCell(1);
     }
+
+    // Add new user cells
+    users.forEach(user => {
+      const userCell = document.createElement('td');
+      userCell.classList.add('choice-container');
+      userCell.dataset.user = user;
+      userCell.dataset.platform = platformNumber;
+
+      const choiceWrapperContainer = document.createElement('div');
+      choiceWrapperContainer.classList.add('choice-wrapper-container');
+
+      for (let choice = 1; choice <= 4; choice++) {
+        const choiceWrapper = document.createElement('div');
+        choiceWrapper.classList.add('choice-wrapper');
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = choice;
+        checkbox.dataset.platform = platformNumber;
+        checkbox.dataset.user = user;
+        checkbox.checked = false;
+
+        const label = document.createElement('div');
+        label.classList.add('choice-label');
+        label.textContent = choice;
+
+        choiceWrapper.appendChild(checkbox);
+        choiceWrapper.appendChild(label);
+        choiceWrapperContainer.appendChild(choiceWrapper);
+      }
+      userCell.appendChild(choiceWrapperContainer);
+      row.appendChild(userCell);
+    });
   });
 }
 
