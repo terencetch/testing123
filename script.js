@@ -110,8 +110,8 @@ function createPlatformUI() {
   buttonContainer.appendChild(clearButton);
   buttonContainer.appendChild(closeButton);
 
-  // Append the button container to the room-page.
-  document.querySelector('.room-page').appendChild(buttonContainer);
+  // Append the button container to the room-page BEFORE the table.
+  document.querySelector('.room-page').insertBefore(buttonContainer, platformTableBody);
 
   const headerRow = document.createElement('tr');
   const platformHeader = document.createElement('th');
