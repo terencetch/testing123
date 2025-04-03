@@ -1,4 +1,4 @@
-// Firebase config (same as before)
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCsuTYdBcFTGRYja0ONqRaW_es2eSCIeKA",
   authDomain: "platform-selection.firebaseapp.com",
@@ -10,7 +10,7 @@ const firebaseConfig = {
   measurementId: "G-LP3VWKX2F7"
 };
 
-// Initialize Firebase (same as before)
+// Initialize Firebase
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
 import { getDatabase, ref, onValue, set, get } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
 
@@ -51,6 +51,7 @@ function joinRoom() {
             createPlatformUI();
             setupRoomListener();
             document.querySelector('.initial-page').style.display = 'none';
+            document.querySelector('.room-page').style.display = 'flex'; // Show room page
           })
           .catch((error) => {
             console.error('Error joining room:', error);
@@ -91,7 +92,6 @@ function createPlatformUI() {
   headerRow.appendChild(platformHeader);
   platformTableBody.appendChild(headerRow);
 
-  // Create the platform rows only once
   for (let i = 10; i >= 1; i--) {
     const row = document.createElement('tr');
     const platformCell = document.createElement('td');
@@ -100,7 +100,6 @@ function createPlatformUI() {
     platformTableBody.appendChild(row);
   }
 
-  // Update user headers dynamically
   updateUserHeaders();
 }
 
@@ -108,38 +107,33 @@ function updateUserHeaders() {
   const usersRef = ref(database, `rooms/${currentRoomId}/users`);
   onValue(usersRef, (snapshot) => {
     const users = snapshot.val() ? Object.keys(snapshot.val()) : [];
-    const headerRow = document.querySelector('#platforms tr'); // Get the header row
+    const headerRow = document.querySelector('#platforms tr');
 
-    // Remove existing user headers
     while (headerRow.cells.length > 1) {
       headerRow.deleteCell(1);
     }
 
-    // Add new user headers
     users.forEach(user => {
       const userHeader = document.createElement('th');
       userHeader.textContent = user;
       headerRow.appendChild(userHeader);
     });
 
-    // Update user cells in platform rows
     updateUserCells(users);
   });
 }
 
 function updateUserCells(users) {
   const platformTableBody = document.getElementById('platforms');
-  const platformRows = platformTableBody.querySelectorAll('tr:not(:first-child)'); // Skip header row
+  const platformRows = platformTableBody.querySelectorAll('tr:not(:first-child)');
 
   platformRows.forEach((row, index) => {
-    const platformNumber = 10 - index; // Calculate platform number
+    const platformNumber = 10 - index;
 
-    // Remove existing user cells
     while (row.cells.length > 1) {
       row.deleteCell(1);
     }
 
-    // Add new user cells
     users.forEach(user => {
       const userCell = document.createElement('td');
       userCell.classList.add('choice-container');
@@ -256,8 +250,7 @@ function clearRoom() {
     set(platformRef, null)
       .then(() => {
         alert('Platform choices cleared!');
-        // Update the UI to clear the platform choices
-        updateUIState({}); // Pass an empty object to clear all choices
+        updateUIState({});
       })
       .catch((error) => {
         console.error('Error clearing platform choices:', error);
@@ -274,6 +267,8 @@ if (roomIdFromUrl) {
   createPlatformUI();
   setupRoomListener();
   document.querySelector('.initial-page').style.display = 'none';
+  document.querySelector('.room-page').style.display = 'flex'; // Show room page
 } else {
-    document.getElementById('platforms').style.display = 'none';
+  document.getElementById('platforms').style.display = 'none';
+  document.querySelector('.room-page').style.display = 'none'; // Ensure room page is hidden
 }
