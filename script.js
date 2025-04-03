@@ -228,8 +228,10 @@ function setupRoomListener() {
     const roomDeletionRef = ref(database, `rooms/${currentRoomId}`);
     onValue(roomDeletionRef, (snapshot) => {
       if (!snapshot.exists()) {
-        alert('Room closed by creator!');
-        window.location.href = 'https://terencetch.github.io/testing123';
+        if (!isCreator){ //only redirect if the user is not the creator.
+          alert('Room closed by creator!');
+          window.location.href = 'https://terencetch.github.io/testing123'; // Redirect
+        }
       }
     });
   }
