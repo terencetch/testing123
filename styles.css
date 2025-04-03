@@ -18,6 +18,8 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center; /* Center content vertically */
+  width: 100%; /* Ensure full width for horizontal centering */
 }
 
 .initial-page h1, .room-page h1 {
@@ -53,11 +55,11 @@ thead {
   background-color: #f2f2f2;
 }
 
-#platforms tbody tr:nth-child(even) { /* Corrected selector */
+#platforms tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-#platforms tbody tr:hover { /* Corrected selector */
+#platforms tbody tr:hover {
   background-color: #e2e2e2;
 }
 
