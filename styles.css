@@ -1,5 +1,5 @@
 body {
-  font-family: Arial, sans-serif; /* Use Arial for better readability */
+  font-family: Arial, sans-serif;
   text-align: center;
   margin: 0;
   padding: 0;
@@ -40,7 +40,7 @@ table {
 th, td {
   padding: 10px;
   text-align: center;
-  border: 1px solid black; /* New table border style */
+  border: 1px solid black;
 }
 
 input[type="checkbox"] {
@@ -50,15 +50,15 @@ input[type="checkbox"] {
 }
 
 thead {
-  background-color: #f2f2f2; /* New table header color */
+  background-color: #f2f2f2;
 }
 
-tbody tr:nth-child(even) {
-  background-color: #f9f9f9; /* New even row color */
+#platforms tbody tr:nth-child(even) { /* Corrected selector */
+  background-color: #f9f9f9;
 }
 
-tbody tr:hover {
-  background-color: #e2e2e2; /* New hover row color */
+#platforms tbody tr:hover { /* Corrected selector */
+  background-color: #e2e2e2;
 }
 
 .checkbox-container {
