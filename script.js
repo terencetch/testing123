@@ -17,6 +17,29 @@ const database = getDatabase(app);
 const functions = getFunctions(app);
 const auth = getAuth(app);
 
+// Add the anonymous sign-in code here:
+auth.signInAnonymously()
+  .then(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUserId = user.uid;
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        // ...
+      } else {
+        // User is signed out
+        // ...
+      }
+    });
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+    console.error("Error signing in anonymously: ", error);
+  });
+
+
 let currentRoomId = null;
 let currentUserId = null;
 let isCreator = false;
