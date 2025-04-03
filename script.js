@@ -12,7 +12,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
-import { getDatabase, ref, onValue, set, get } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
+import { getDatabase, ref, onValue, set, get, remove } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
 
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
@@ -20,6 +20,7 @@ const database = getDatabase(app);
 let currentRoomId = null;
 let currentUserId = null;
 let roomRef = null;
+let isCreator = false; // Add variable
 
 function joinRoom() {
   const roomIdInput = document.getElementById('roomId');
@@ -52,6 +53,16 @@ function joinRoom() {
             setupRoomListener();
             document.querySelector('.initial-page').style.display = 'none';
             document.querySelector('.room-page').style.display = 'flex'; // Show room page
+
+            // Check if the user is the creator
+            get(ref(database, `rooms/${currentRoomId}/creatorId`))
+              .then((creatorSnapshot) => {
+                isCreator = !creatorSnapshot.exists(); // If no creator, this user is the creator
+                if (isCreator) {
+                  set(ref(database, `rooms/${currentRoomId}/creatorId`), currentUserId);
+                }
+                showCreatorButtons();
+              });
           })
           .catch((error) => {
             console.error('Error joining room:', error);
@@ -81,10 +92,12 @@ function createPlatformUI() {
 
   if (!currentRoomId) {
     document.getElementById('clearRoomButton').style.display = 'none';
+    document.getElementById('closeRoomButton').style.display = 'none';
     return;
   }
 
   document.getElementById('clearRoomButton').style.display = 'block';
+  showCreatorButtons();
 
   const headerRow = document.createElement('tr');
   const platformHeader = document.createElement('th');
@@ -267,6 +280,30 @@ function clearRoom() {
 }
 
 document.getElementById('clearRoomButton').addEventListener('click', clearRoom);
+
+function showCreatorButtons() {
+  if (isCreator) {
+    document.getElementById('closeRoomButton').style.display = 'block';
+  } else {
+    document.getElementById('closeRoomButton').style.display = 'none';
+  }
+}
+
+function closeRoom() {
+  if (isCreator && currentRoomId) {
+    remove(ref(database, `rooms/${currentRoomId}`))
+      .then(() => {
+        alert('Room closed!');
+        window.location.href = window.location.origin; // Redirect to welcome page
+      })
+      .catch((error) => {
+        console.error('Error closing room:', error);
+        alert('Failed to close room. Please try again.');
+      });
+  }
+}
+
+document.getElementById('closeRoomButton').addEventListener('click', closeRoom);
 
 const roomIdFromUrl = getRoomIdFromUrl();
 if (roomIdFromUrl) {
