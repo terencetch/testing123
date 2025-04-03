@@ -59,12 +59,12 @@ input[type="checkbox"] {
 
 /* Odd row color */
 #platforms .odd-row {
-  background-color: white;
+  background-color: #f9f9f9;
 }
 
 /* Even row color */
 #platforms .even-row {
-  background-color: #f9f9f9;
+  background-color: white;
 }
 
 /* Hover row color */
