@@ -114,6 +114,7 @@ function createPlatformUI() {
   document.querySelector('.room-page').insertBefore(buttonContainer, platformTableBody);
 
   const headerRow = document.createElement('tr');
+    headerRow.style.backgroundColor = '#f2f2f2'; //added inline style.
   const platformHeader = document.createElement('th');
   platformHeader.textContent = 'Platforms';
   headerRow.appendChild(platformHeader);
