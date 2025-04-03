@@ -165,6 +165,13 @@ function updateUserCells(users) {
       userCell.appendChild(choiceWrapperContainer);
       row.appendChild(userCell);
     });
+
+    // Add alternating classes
+    if (index % 2 === 0) {
+      row.classList.add('even-row');
+    } else {
+      row.classList.add('odd-row');
+    }
   });
 }
 
