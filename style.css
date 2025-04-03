@@ -119,6 +119,7 @@ input[type="checkbox"]:disabled {
   color: white;
   border: none;
   cursor: pointer;
+  width: 150px; /* Added fixed width */
 }
 
 #clearRoomButton:hover {
@@ -133,7 +134,7 @@ input[type="checkbox"]:disabled {
 }
 
 #platforms {
-  margin-top: 40px; /* Add margin to the table */
+  margin-top: 40px;
 }
 
 .choice-wrapper input[type="checkbox"] {
