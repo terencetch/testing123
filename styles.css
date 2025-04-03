@@ -16,6 +16,11 @@ body {
   width: 100%;
 }
 
+.initial-page h1 {
+  font-size: 2em; /* Added title styling */
+  margin-bottom: 20px; /* Added margin for spacing */
+}
+
 .initial-page input, .initial-page button {
   margin: 15px;
   padding: 12px 20px;
@@ -38,8 +43,8 @@ body {
 
 .choice-wrapper-container {
   display: flex;
-  width: 100%; /* Make the container fill the cell */
-  justify-content: space-around; /* Distribute choices evenly */
+  width: 100%;
+  justify-content: space-around;
 }
 
 .choice-wrapper {
@@ -47,7 +52,7 @@ body {
   flex-direction: column;
   align-items: center;
   margin: 5px;
-  width: 20%; /* Distribute equally among 4 choices */
+  width: 20%;
 }
 
 .choice-label {
@@ -77,6 +82,6 @@ body {
 }
 
 .choice-wrapper input[type="checkbox"] {
-  width: 100%; /* Make checkbox fill the wrapper */
-  height: 20px; /* Adjust height as needed */
+  width: 100%;
+  height: 20px;
 }
