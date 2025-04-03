@@ -58,12 +58,12 @@ input[type="checkbox"] {
 }
 
 /* Odd row color */
-#platforms tbody tr:nth-child(odd) {
+#platforms .odd-row {
   background-color: white;
 }
 
 /* Even row color */
-#platforms tbody tr:nth-child(even) {
+#platforms .even-row {
   background-color: #f9f9f9;
 }
 
@@ -121,7 +121,6 @@ input[type="checkbox"]:disabled {
 
 #clearRoomButton {
   margin: 20px auto; /* Centered horizontally */
-  margin-top: 20px;
   padding: 12px 18px;
   font-size: 18px;
   background-color: #f44336;
