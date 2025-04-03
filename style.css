@@ -55,11 +55,11 @@ thead {
   background-color: #f2f2f2;
 }
 
-#platforms tbody tr:nth-child(even) {
+#platforms tbody tr:nth-child(even) { /* Corrected selector */
   background-color: #f9f9f9;
 }
 
-#platforms tbody tr:hover {
+#platforms tbody tr:hover { /* Corrected selector */
   background-color: #e2e2e2;
 }
 
@@ -111,8 +111,8 @@ input[type="checkbox"]:disabled {
 }
 
 #clearRoomButton {
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 20px; /* Equal margin top */
+  margin-bottom: 20px; /* Equal margin bottom */
   padding: 12px 18px;
   font-size: 18px;
   background-color: #f44336;
