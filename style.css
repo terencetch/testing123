@@ -52,19 +52,23 @@ input[type="checkbox"] {
   margin-bottom: 5px;
 }
 
-#platforms thead { /* Header row color */
+/* Header row color */
+#platforms thead tr {
   background-color: #f2f2f2;
 }
 
-#platforms tbody tr:nth-child(odd) { /* Odd row color */
+/* Odd row color */
+#platforms tbody tr:nth-child(odd) {
   background-color: white;
 }
 
-#platforms tbody tr:nth-child(even) { /* Even row color */
+/* Even row color */
+#platforms tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-#platforms tbody tr:hover { /* Hover row color */
+/* Hover row color */
+#platforms tbody tr:hover {
   background-color: #e2e2e2;
 }
 
@@ -116,6 +120,7 @@ input[type="checkbox"]:disabled {
 }
 
 #clearRoomButton {
+  margin: 20px auto; /* Centered horizontally */
   margin-top: 20px;
   padding: 12px 18px;
   font-size: 18px;
