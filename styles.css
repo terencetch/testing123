@@ -110,6 +110,7 @@ input[type="checkbox"]:disabled {
 
 #clearRoomButton {
   margin-top: 10px;
+  margin-bottom: 10px;
   padding: 12px 18px;
   font-size: 18px;
   background-color: #f44336;
