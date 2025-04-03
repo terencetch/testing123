@@ -1,12 +1,10 @@
 // Firebase config (remove API key)
 const firebaseConfig = {
-  authDomain: "platform-selection.firebaseapp.com",
-  databaseURL: "https://platform-selection-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "platform-selection",
-  storageBucket: "platform-selection.firebasestorage.app",
-  messagingSenderId: "937466148910",
-  appId: "1:937466148910:web:42406630f4d64409e947bf",
-  measurementId: "G-LP3VWKX2F7"
+  authDomain: "mpqhelper-5cee5.firebaseapp.com",
+  projectId: "mpqhelper-5cee5",
+  storageBucket: "mpqhelper-5cee5.firebasestorage.app",
+  messagingSenderId: "513036665304",
+  appId: "1:513036665304:web:cd99b544f277f7c62832ad"
 };
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
