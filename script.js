@@ -183,6 +183,18 @@ function updateUserCells(users) {
     } else {
       row.classList.add('odd-row');
     }
+    //Add event listeners for the hover effect
+    row.addEventListener('mouseover', () => {
+        row.style.backgroundColor = '#e2e2e2';
+    });
+    row.addEventListener('mouseout', () => {
+        if (index % 2 === 0){
+            row.style.backgroundColor = 'white';
+        } else {
+            row.style.backgroundColor = '#f9f9f9';
+        }
+
+    });
   });
 }
 
