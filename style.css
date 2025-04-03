@@ -54,12 +54,12 @@ input[type="checkbox"] {
 
 /* Header row color */
 #platforms thead tr {
-  background-color: ##f2f2f2;
+  background-color: #f2f2f2;
 }
 
 /* Odd row color */
 #platforms .odd-row {
-  background-color: ##f2f2f2;
+  background-color: #f2f2f2;
 }
 
 /* Even row color */
@@ -119,8 +119,15 @@ input[type="checkbox"]:disabled {
   cursor: not-allowed;
 }
 
+/* Button container styles */
+.button-container {
+  display: flex; /* Use flexbox for horizontal layout */
+  justify-content: center; /* Center buttons horizontally */
+  margin: 20px auto; /* Add margin for spacing */
+}
+
 #clearRoomButton, #closeRoomButton {
-  margin: 20px auto; /* Centered horizontally */
+  margin: 0 10px; /* Add horizontal margin between buttons */
   padding: 12px 18px;
   font-size: 18px;
   border: none;
@@ -134,8 +141,8 @@ input[type="checkbox"]:disabled {
 }
 
 #closeRoomButton {
-    background-color: #333333;
-    color: white;
+  background-color: #333333;
+  color: white;
 }
 
 #clearRoomButton:hover, #closeRoomButton:hover {
