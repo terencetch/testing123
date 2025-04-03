@@ -198,7 +198,7 @@ function updateUserCells(users) {
     } else {
       row.classList.add('odd-row');
     }
-    //Add event listeners for the hover effect
+   //Add event listeners for the hover effect
     row.addEventListener('mouseover', () => {
         row.style.backgroundColor = '#e2e2e2';
     });
@@ -206,7 +206,7 @@ function updateUserCells(users) {
         if (index % 2 === 0){
             row.style.backgroundColor = 'white';
         } else {
-            row.style.backgroundColor = '#f9f9f9';
+            row.style.backgroundColor = '#f2f2f2';
         }
 
     });
