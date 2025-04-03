@@ -52,15 +52,19 @@ input[type="checkbox"] {
   margin-bottom: 5px;
 }
 
-thead {
+#platforms thead { /* Header row color */
   background-color: #f2f2f2;
 }
 
-#platforms tbody tr:nth-child(even) {
+#platforms tbody tr:nth-child(odd) { /* Odd row color */
+  background-color: white;
+}
+
+#platforms tbody tr:nth-child(even) { /* Even row color */
   background-color: #f9f9f9;
 }
 
-#platforms tbody tr:hover {
+#platforms tbody tr:hover { /* Hover row color */
   background-color: #e2e2e2;
 }
 
@@ -119,7 +123,7 @@ input[type="checkbox"]:disabled {
   color: white;
   border: none;
   cursor: pointer;
-  width: 150px; /* Added fixed width */
+  width: 150px;
 }
 
 #clearRoomButton:hover {
