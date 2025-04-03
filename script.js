@@ -1,6 +1,5 @@
-// Firebase config (same as before)
+// Firebase config (remove API key)
 const firebaseConfig = {
-  apiKey: "AIzaSyCsuTYdBcFTGRYja0ONqRaW_es2eSCIeKA",
   authDomain: "platform-selection.firebaseapp.com",
   databaseURL: "https://platform-selection-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "platform-selection",
@@ -10,70 +9,57 @@ const firebaseConfig = {
   measurementId: "G-LP3VWKX2F7"
 };
 
-// Initialize Firebase (same as before)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
-import { getDatabase, ref, onValue, set, get, remove } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
+import { getDatabase, ref, onValue, get, remove } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
+import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-functions.js';
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+const functions = getFunctions(app);
+const auth = getAuth(app);
 
 let currentRoomId = null;
 let currentUserId = null;
-let roomRef = null;
 let isCreator = false;
+
+// Authenticate Anonymously
+auth.signInAnonymously()
+  .then(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUserId = user.uid;
+      } else {
+        console.log("User signed out");
+      }
+    });
+  })
+  .catch((error) => {
+    console.error("Error signing in anonymously: ", error);
+  });
 
 function joinRoom() {
   const roomIdInput = document.getElementById('roomId');
-  const userIdInput = document.getElementById('userId');
   const roomId = roomIdInput.value.trim();
-  const userId = userIdInput.value.trim();
 
-  if (roomId && userId) {
+  if (roomId) {
     currentRoomId = roomId;
-    currentUserId = userId;
-    const usersRef = ref(database, `rooms/${currentRoomId}/users`);
-
-    get(usersRef)
-      .then((snapshot) => {
-        let users = snapshot.val() ? Object.keys(snapshot.val()) : [];
-
-        if (users.length >= 4 && !users.includes(userId)) {
-          alert('The room is at maximum capacity (4 players).');
-          return;
-        }
-
-        roomRef = ref(database, `rooms/${currentRoomId}/users/${currentUserId}`);
-
-        set(roomRef, true)
-          .then(() => {
-            const url = new URL(window.location.href);
-            url.searchParams.set('roomId', currentRoomId);
-            window.history.pushState({}, '', url);
-            createPlatformUI();
-            setupRoomListener();
-            document.querySelector('.initial-page').style.display = 'none';
-            document.querySelector('.room-page').style.display = 'flex';
-
-            get(ref(database, `rooms/${currentRoomId}/creatorId`))
-              .then((creatorSnapshot) => {
-                isCreator = !creatorSnapshot.exists();
-                if (isCreator) {
-                  set(ref(database, `rooms/${currentRoomId}/creatorId`), currentUserId);
-                }
-                showCreatorButtons();
-              });
-          })
-          .catch((error) => {
-            console.error('Error joining room:', error);
-            alert('Failed to join room. Please try again.');
-          });
+    const joinRoomFunction = httpsCallable(functions, 'joinRoomFunction');
+    joinRoomFunction({ roomId: currentRoomId, userId: currentUserId })
+      .then((result) => {
+        isCreator = result.data.isCreator;
+        createPlatformUI();
+        setupRoomListener();
+        document.querySelector('.initial-page').style.display = 'none';
+        document.querySelector('.room-page').style.display = 'flex';
+        showCreatorButtons();
       })
       .catch((error) => {
-        console.error('Error fetching users:', error);
+        console.error('Error joining room:', error);
         alert('Failed to join room. Please try again.');
       });
   } else {
-    alert('Please enter both Room ID and User ID.');
+    alert('Please enter Room ID.');
   }
 }
 
@@ -200,7 +186,7 @@ function updateUserCells(users) {
       row.classList.add('odd-row');
       row.style.backgroundColor = '#f2f2f2'; // Set background color immediately
     }
-   //Add event listeners for the hover effect
+    //Add event listeners for the hover effect
     row.addEventListener('mouseover', () => {
         row.style.backgroundColor = '#e2e2e2';
     });
@@ -246,10 +232,11 @@ document.getElementById('platforms').addEventListener('change', (event) => {
     const user = checkbox.dataset.user;
     const choice = checkbox.value;
 
-    if (currentRoomId) {
-      const userRef = ref(database, `rooms/${currentRoomId}/platforms/${platformNumber}/${user}`);
-      set(userRef, checkbox.checked ? choice : null);
-    }
+    const updatePlatformChoice = httpsCallable(functions, 'updatePlatformChoice');
+    updatePlatformChoice({ roomId: currentRoomId, platformNumber, userId: currentUserId, choice })
+      .catch((error) => {
+        console.error('Error updating platform choice:', error);
+      });
   }
 });
 
@@ -303,18 +290,16 @@ function updateUIState(platformData) {
 }
 
 function clearRoom() {
-  if (currentRoomId) {
-    const platformRef = ref(database, `rooms/${currentRoomId}/platforms`);
-    set(platformRef, null)
-      .then(() => {
-        alert('Platform choices cleared!');
-        updateUIState({});
-      })
-      .catch((error) => {
-        console.error('Error clearing platform choices:', error);
-        alert('Failed to clear platform choices. Please try again.');
-      });
-  }
+  const clearRoomFunction = httpsCallable(functions, 'clearRoomFunction');
+  clearRoomFunction({ roomId: currentRoomId })
+    .then(() => {
+      alert('Platform choices cleared!');
+      updateUIState({});
+    })
+    .catch((error) => {
+      console.error('Error clearing room:', error);
+      alert('Failed to clear platform choices. Please try again.');
+    });
 }
 
 document.getElementById('clearRoomButton').addEventListener('click', clearRoom);
@@ -328,17 +313,16 @@ function showCreatorButtons() {
 }
 
 function closeRoom() {
-  if (isCreator && currentRoomId) {
-    remove(ref(database, `rooms/${currentRoomId}`))
-      .then(() => {
-        alert('Room closed!');
-        window.location.href = 'https://terencetch.github.io/testing123'; // Corrected URL
-      })
-      .catch((error) => {
-        console.error('Error closing room:', error);
-        alert('Failed to close room. Please try again.');
-      });
-  }
+  const closeRoomFunction = httpsCallable(functions, 'closeRoomFunction');
+  closeRoomFunction({ roomId: currentRoomId, isCreator: isCreator })
+    .then(() => {
+      alert('Room closed!');
+      window.location.href = 'https://terencetch.github.io/testing123';
+    })
+    .catch((error) => {
+      console.error('Error closing room:', error);
+      alert('Failed to close room. Please try again.');
+    });
 }
 
 document.getElementById('closeRoomButton').addEventListener('click', closeRoom);
