@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Platform Game</title>
-  <link rel="stylesheet" href="styles.css">
+    <title>Platform Selection</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="initial-page">
-    <input type="text" id="roomId" placeholder="Room ID">
+
+<div class="initial-page">
+    <h1>WeBareBear's MPQ Helper</h1> <input type="text" id="roomId" placeholder="Room ID">
     <input type="text" id="userId" placeholder="User ID">
     <button id="joinRoomButton">Join Room</button>
-  </div>
+</div>
 
-  <div class="room-page">
+<div class="room-page">
+    <table id="platforms" style="display: none;"></table>
     <button id="clearRoomButton" style="display: none;">Clear Room</button>
-    <table id="platforms"></table>
-  </div>
+</div>
 
-  <script type="module" src="script.js"></script>
+<script src="script.js"></script>
+
 </body>
 </html>
