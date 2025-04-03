@@ -17,34 +17,11 @@ const database = getDatabase(app);
 const functions = getFunctions(app);
 const auth = getAuth(app);
 
-// Add the anonymous sign-in code here:
-auth.signInAnonymously()
-  .then(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUserId = user.uid;
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        // ...
-      } else {
-        // User is signed out
-        // ...
-      }
-    });
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ...
-    console.error("Error signing in anonymously: ", error);
-  });
-
-
 let currentRoomId = null;
 let currentUserId = null;
 let isCreator = false;
 
-// Authenticate Anonymously
+// Anonymous sign-in
 auth.signInAnonymously()
   .then(() => {
     onAuthStateChanged(auth, (user) => {
@@ -105,23 +82,19 @@ function createPlatformUI() {
   document.getElementById('clearRoomButton').style.display = 'block';
   showCreatorButtons();
 
-  // Create the button container.
   const buttonContainer = document.createElement('div');
   buttonContainer.classList.add('button-container');
 
-  // Get the buttons.
   const clearButton = document.getElementById('clearRoomButton');
   const closeButton = document.getElementById('closeRoomButton');
 
-  // Append the buttons to the button container.
   buttonContainer.appendChild(clearButton);
   buttonContainer.appendChild(closeButton);
 
-  // Append the button container to the room-page BEFORE the table.
   document.querySelector('.room-page').insertBefore(buttonContainer, platformTableBody);
 
   const headerRow = document.createElement('tr');
-    headerRow.style.backgroundColor = '#f2f2f2'; //added inline style.
+  headerRow.style.backgroundColor = '#f2f2f2';
   const platformHeader = document.createElement('th');
   platformHeader.textContent = 'Platforms';
   headerRow.appendChild(platformHeader);
@@ -205,19 +178,18 @@ function updateUserCells(users) {
       row.classList.add('even-row');
     } else {
       row.classList.add('odd-row');
-      row.style.backgroundColor = '#f2f2f2'; // Set background color immediately
+      row.style.backgroundColor = '#f2f2f2';
     }
-    //Add event listeners for the hover effect
+
     row.addEventListener('mouseover', () => {
-        row.style.backgroundColor = '#e2e2e2';
+      row.style.backgroundColor = '#e2e2e2';
     });
     row.addEventListener('mouseout', () => {
-        if (index % 2 === 0){
-            row.style.backgroundColor = 'white';
-        } else {
-            row.style.backgroundColor = '#f2f2f2';
-        }
-
+      if (index % 2 === 0) {
+        row.style.backgroundColor = 'white';
+      } else {
+        row.style.backgroundColor = '#f2f2f2';
+      }
     });
   });
 }
@@ -233,13 +205,12 @@ function setupRoomListener() {
       }
     });
 
-    // Listen for room deletion
     const roomDeletionRef = ref(database, `rooms/${currentRoomId}`);
     onValue(roomDeletionRef, (snapshot) => {
       if (!snapshot.exists()) {
-        if (!isCreator){ //only redirect if the user is not the creator.
+        if (!isCreator) {
           alert('Room closed by creator!');
-          window.location.href = 'https://terencetch.github.io/testing123'; // Redirect
+          window.location.href = 'https://terencetch.github.io/testing123';
         }
       }
     });
