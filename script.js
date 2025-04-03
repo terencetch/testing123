@@ -98,6 +98,21 @@ function createPlatformUI() {
   document.getElementById('clearRoomButton').style.display = 'block';
   showCreatorButtons();
 
+  // Create the button container.
+  const buttonContainer = document.createElement('div');
+  buttonContainer.classList.add('button-container');
+
+  // Get the buttons.
+  const clearButton = document.getElementById('clearRoomButton');
+  const closeButton = document.getElementById('closeRoomButton');
+
+  // Append the buttons to the button container.
+  buttonContainer.appendChild(clearButton);
+  buttonContainer.appendChild(closeButton);
+
+  // Append the button container to the room-page.
+  document.querySelector('.room-page').appendChild(buttonContainer);
+
   const headerRow = document.createElement('tr');
   const platformHeader = document.createElement('th');
   platformHeader.textContent = 'Platforms';
