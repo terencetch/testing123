@@ -1,4 +1,4 @@
-// Firebase config
+// Firebase config (same as before)
 const firebaseConfig = {
   apiKey: "AIzaSyCsuTYdBcFTGRYja0ONqRaW_es2eSCIeKA",
   authDomain: "platform-selection.firebaseapp.com",
@@ -10,7 +10,7 @@ const firebaseConfig = {
   measurementId: "G-LP3VWKX2F7"
 };
 
-// Initialize Firebase
+// Initialize Firebase (same as before)
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
 import { getDatabase, ref, onValue, set, get, remove } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
 
@@ -20,7 +20,7 @@ const database = getDatabase(app);
 let currentRoomId = null;
 let currentUserId = null;
 let roomRef = null;
-let isCreator = false; // Add variable
+let isCreator = false;
 
 function joinRoom() {
   const roomIdInput = document.getElementById('roomId');
@@ -39,7 +39,7 @@ function joinRoom() {
 
         if (users.length >= 4 && !users.includes(userId)) {
           alert('The room is at maximum capacity (4 players).');
-          return; // Stop the join process
+          return;
         }
 
         roomRef = ref(database, `rooms/${currentRoomId}/users/${currentUserId}`);
@@ -52,12 +52,11 @@ function joinRoom() {
             createPlatformUI();
             setupRoomListener();
             document.querySelector('.initial-page').style.display = 'none';
-            document.querySelector('.room-page').style.display = 'flex'; // Show room page
+            document.querySelector('.room-page').style.display = 'flex';
 
-            // Check if the user is the creator
             get(ref(database, `rooms/${currentRoomId}/creatorId`))
               .then((creatorSnapshot) => {
-                isCreator = !creatorSnapshot.exists(); // If no creator, this user is the creator
+                isCreator = !creatorSnapshot.exists();
                 if (isCreator) {
                   set(ref(database, `rooms/${currentRoomId}/creatorId`), currentUserId);
                 }
@@ -179,7 +178,6 @@ function updateUserCells(users) {
       row.appendChild(userCell);
     });
 
-    // Add alternating classes
     if (index % 2 === 0) {
       row.classList.add('even-row');
     } else {
@@ -196,6 +194,15 @@ function setupRoomListener() {
         updateUIState(snapshot.val());
       } else {
         updateUIState({});
+      }
+    });
+
+    // Listen for room deletion
+    const roomDeletionRef = ref(database, `rooms/${currentRoomId}`);
+    onValue(roomDeletionRef, (snapshot) => {
+      if (!snapshot.exists()) {
+        alert('Room closed by creator!');
+        window.location.href = 'https://terencetch.github.io/testing123';
       }
     });
   }
@@ -294,7 +301,7 @@ function closeRoom() {
     remove(ref(database, `rooms/${currentRoomId}`))
       .then(() => {
         alert('Room closed!');
-        window.location.href = window.location.origin; // Redirect to welcome page
+        window.location.href = 'https://terencetch.github.io/testing123'; // Corrected URL
       })
       .catch((error) => {
         console.error('Error closing room:', error);
@@ -311,8 +318,8 @@ if (roomIdFromUrl) {
   createPlatformUI();
   setupRoomListener();
   document.querySelector('.initial-page').style.display = 'none';
-  document.querySelector('.room-page').style.display = 'flex'; // Show room page
+  document.querySelector('.room-page').style.display = 'flex';
 } else {
   document.getElementById('platforms').style.display = 'none';
-  document.querySelector('.room-page').style.display = 'none'; // Ensure room page is hidden
+  document.querySelector('.room-page').style.display = 'none';
 }
