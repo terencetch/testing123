@@ -54,12 +54,12 @@ input[type="checkbox"] {
 
 /* Header row color */
 #platforms thead tr {
-  background-color: #f9f9f9;
+  background-color: ##f2f2f2;
 }
 
 /* Odd row color */
 #platforms .odd-row {
-  background-color: #f9f9f9;
+  background-color: ##f2f2f2;
 }
 
 /* Even row color */
