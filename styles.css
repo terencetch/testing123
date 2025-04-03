@@ -13,19 +13,22 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  width: 80%;
+  max-width: 600px;
 }
 
-.initial-page h1 {
-  font-size: 2em; /* Added title styling */
-  margin-bottom: 20px; /* Added margin for spacing */
+.initial-page h1, .room-page h1 { /* Apply styling to both initial-page and room-page titles */
+  font-size: 2.5em;
+  margin-bottom: 30px;
+  text-align: center;
 }
 
 .initial-page input, .initial-page button {
-  margin: 15px;
-  padding: 12px 20px;
-  font-size: 20px;
-  width: 300px;
+  margin: 20px;
+  padding: 15px 25px;
+  font-size: 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 #platforms {
@@ -60,7 +63,7 @@ body {
 }
 
 #clearRoomButton {
-  margin-top: 10px;
+  margin-top: 40px; /* Increased margin for spacing */
   padding: 12px 18px;
   font-size: 18px;
   background-color: #f44336;
