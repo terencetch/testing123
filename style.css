@@ -52,18 +52,19 @@ input[type="checkbox"] {
   margin-bottom: 5px;
 }
 
+
 /* Header row color */
 #platforms thead tr {
-  background-color: #f2f2f2;
+  background-color: #f2f2f2 !important; /* !important to override other styles */
 }
 
-/* Odd row color */
-#platforms .odd-row {
-  background-color: #f2f2f2;
+/* Odd row color - More specific selector */
+#platforms tbody tr.odd-row {
+  background-color: #f2f2f2 !important; /* !important to override other styles */
 }
 
 /* Even row color */
-#platforms .even-row {
+#platforms tbody tr.even-row {
   background-color: white;
 }
 
