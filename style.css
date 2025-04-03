@@ -119,18 +119,26 @@ input[type="checkbox"]:disabled {
   cursor: not-allowed;
 }
 
-#clearRoomButton {
+#clearRoomButton, #closeRoomButton {
   margin: 20px auto; /* Centered horizontally */
   padding: 12px 18px;
   font-size: 18px;
-  background-color: #f44336;
-  color: white;
   border: none;
   cursor: pointer;
   width: 150px;
 }
 
-#clearRoomButton:hover {
+#clearRoomButton {
+  background-color: #f44336;
+  color: white;
+}
+
+#closeRoomButton {
+    background-color: #333333;
+    color: white;
+}
+
+#clearRoomButton:hover, #closeRoomButton:hover {
   background-color: #d32f2f;
 }
 
