@@ -198,6 +198,7 @@ function updateUserCells(users) {
       row.classList.add('even-row');
     } else {
       row.classList.add('odd-row');
+      row.style.backgroundColor = '#f2f2f2'; // Set background color immediately
     }
    //Add event listeners for the hover effect
     row.addEventListener('mouseover', () => {
