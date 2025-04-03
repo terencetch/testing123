@@ -10,7 +10,7 @@ const firebaseConfig = {
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
 import { getDatabase, ref, onValue, get, remove } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
 import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/9.17.1/firebase-functions.js';
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
